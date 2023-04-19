@@ -1,0 +1,19 @@
+// const insert = async () => {
+//     const data = await Admin.create({
+//         name: "Ayush",
+//         phone: 456,
+//         email: "email",
+//         password: "123",
+//     });
+
+//     console.log(data);
+// };
+
+// const pushArray = async () => {
+//     await Admin.findByIdAndUpdate(
+//         { _id: "642d6bacf0d833461ff7d19a" },
+//         {
+//             $push: { session: "642d6bacf0d833461ff7d19a" },
+//         }
+//     );
+// };

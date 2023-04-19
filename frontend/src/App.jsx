@@ -1,0 +1,64 @@
+import { useState } from "react";
+import "./App.css";
+import Navigation from "./components/Navigation";
+import { createBrowserRouter, Outlet, RouterProvider } from "react-router-dom";
+import Home from "./pages/Home";
+import Login from "./pages/Login";
+// import Register from "./pages/Register";
+import { Footer } from "./components/Footer";
+
+import "react-toastify/dist/ReactToastify.css";
+
+import { ToastContainer } from "react-toastify";
+
+import mapboxgl from "mapbox-gl";
+import CreateBandobust from "./pages/CreateBandobust";
+import Dashboard from "./pages/Dashboard";
+mapboxgl.accessToken = import.meta.env.VITE_MAPBOX_API_KEY;
+
+import axios from "axios";
+axios.defaults.baseURL = "http://localhost:3000/api/";
+axios.defaults.withCredentials = true;
+// axios.defaults.baseURL = "";
+
+const Layout = () => {
+    return (
+        <>
+            <Navigation />
+            <Outlet />
+            <Footer />
+        </>
+    );
+};
+
+const router = createBrowserRouter([
+    {
+        path: "/",
+        element: <Layout />,
+        children: [
+            { path: "/", element: <Home /> },
+            { path: "/create-bandobust", element: <CreateBandobust /> },
+            { path: "/dashboard", element: <Dashboard /> },
+        ],
+    },
+    {
+        path: "/login",
+        element: <Login />,
+    },
+    // {
+    //     path: "/register",
+    //     element: <Register />,
+    // },
+    ,
+]);
+
+function App() {
+    return (
+        <div className="app mx-auto">
+            <ToastContainer theme="dark" />
+            <RouterProvider router={router} />
+        </div>
+    );
+}
+
+export default App;

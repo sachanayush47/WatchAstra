@@ -1,0 +1,20 @@
+.user-card {
+    max-height: 700px;
+}
+
+.map-container-create-bandobust {
+    height: 700px;
+    /* max-width: 1000px; */
+    /* margin: 0px auto; */
+    /* margin-bottom: 15px; */
+}
+
+/* .map-container-create-bandobust-form {
+    max-width: 1000px;
+} */
+
+.map-container-dashboard {
+    height: 700px;
+    /* width: 1000px; */
+    /* margin: 0px auto; */
+}
