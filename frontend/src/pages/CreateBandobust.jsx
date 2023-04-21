@@ -4,18 +4,24 @@ import MapboxDraw from "@mapbox/mapbox-gl-draw";
 import "mapbox-gl/dist/mapbox-gl.css";
 import axios from "axios";
 import { notifyError, notifySuccess } from "../utils/toastify";
-import { Link } from "react-router-dom";
+import * as turf from "@turf/helpers";
+import centroid from "@turf/centroid";
 
 import { DemoContainer } from "@mui/x-date-pickers/internals/demo";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { DateTimePicker } from "@mui/x-date-pickers/DateTimePicker";
 
+import dayjs from "dayjs";
+
 const CreateBandobust = () => {
     const mapContainer = useRef(null);
     const map = useRef(null);
     const draw = useRef(null);
-    const [bandobustName, setBandobustName] = useState();
+
+    const [bandobustName, setBandobustName] = useState(null);
+    const [startDateTime, setStartDateTime] = useState(dayjs(Date.now()).$d);
+    const [endDateTime, setEndDateTime] = useState(dayjs(Date.now()).$d);
 
     useEffect(() => {
         if (map.current) return; // Initialize map only once
@@ -34,9 +40,6 @@ const CreateBandobust = () => {
 
                 // When active the map will receive updates to the device's location as it changes.
                 trackUserLocation: true,
-
-                // Draw an arrow next to the location dot to indicate which direction the device is heading.
-                showUserHeading: true,
             })
         );
 
@@ -59,33 +62,51 @@ const CreateBandobust = () => {
             notifyError("Geofencing missing, please a draw polygon on map.");
         else {
             try {
-                const res = await axios.post("/admin/create-session", { geoFencing: coordinates });
+                const poly = turf.polygon(coordinates);
+                const center = centroid(poly);
+
+                await axios.post("/admin/create-session", {
+                    geoFencing: coordinates,
+                    startDateTime,
+                    endDateTime,
+                    bandobustName,
+                    center: center.geometry.coordinates,
+                });
+
                 notifySuccess("Successful");
-                console.log(res);
             } catch (error) {
                 notifyError(error.response.data.err);
-                console.log(error.response.data.err);
             }
         }
     };
 
     return (
         <div className="bg-slate-900">
-            <div className="flex">
-                <div className="max-w-fit mx-4 mr-0">
-                    <div className="flex content-center items-center justify-center h-full">
+            <div className="flex flex-col-reverse lg:flex-row justify-center items-center">
+                <div className="max-w-fit mx-4 lg:mr-0">
+                    <div className="w-full">
                         <div className="flex flex-col rounded-md bg-blue-50">
                             <div className="rounded-t px-6 py-4"></div>
                             <div className="flex-auto px-6 py-6 pt-0">
                                 <LocalizationProvider dateAdapter={AdapterDayjs}>
                                     <DemoContainer components={["DateTimePicker"]}>
-                                        <DateTimePicker label="Bandobust start time" />
+                                        <DateTimePicker
+                                            ampm={false}
+                                            defaultValue={dayjs(Date.now())}
+                                            onChange={(value) => setStartDateTime(value)}
+                                            label="Bandobust start time"
+                                        />
                                     </DemoContainer>
                                 </LocalizationProvider>
 
                                 <LocalizationProvider dateAdapter={AdapterDayjs}>
                                     <DemoContainer components={["DateTimePicker"]}>
-                                        <DateTimePicker label="Bandobust end time" />
+                                        <DateTimePicker
+                                            ampm={false}
+                                            defaultValue={dayjs(Date.now())}
+                                            onChange={(value) => setEndDateTime(value)}
+                                            label="Bandobust end time"
+                                        />
                                     </DemoContainer>
                                 </LocalizationProvider>
 
@@ -119,7 +140,7 @@ const CreateBandobust = () => {
                 </div>
                 <div
                     ref={mapContainer}
-                    className="map-container-create-bandobust border-solid rounded border-4 border-blue-300 w-5/6 m-4"
+                    className="map-container-create-bandobust border-solid rounded border-4 border-blue-300 w-11/12 lg:w-5/6 m-4"
                 />
             </div>
         </div>

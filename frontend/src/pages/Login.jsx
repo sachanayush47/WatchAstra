@@ -3,6 +3,7 @@ import BackgroundImage from "../assets/register_bg_2.png";
 import { AuthContext } from "../context/authContextProvider";
 
 import { useState, useContext } from "react";
+import { notifyError } from "../utils/toastify";
 
 export default function Login() {
     const [adminUsername, setAdminUsername] = useState(null);
@@ -18,6 +19,7 @@ export default function Login() {
             navigate("/dashboard");
         } catch (error) {
             console.log(error);
+            notifyError(error.response.data.err);
         }
     };
 

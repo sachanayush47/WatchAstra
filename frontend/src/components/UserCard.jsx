@@ -2,16 +2,15 @@ import React from "react";
 
 const UserCard = () => {
     return (
-        <div class="m-2 border-8 border-green-500 border-solid rounded-lg">
-            <div class="flex max-w-md bg-white shadow-lg  overflow-hidden">
+        <div class="mx-4 border-8 border-green-500 border-solid rounded-sm">
+            <div class="flex max-w-md bg-blue-50 shadow-lg overflow-hidden">
                 <div
-                    class="w-1/3 bg-cover"
+                    class="w-2/5 bg-cover"
                     style={{
-                        backgroundImage:
-                            "url('https://assets.telegraphindia.com/telegraph/c9627afa-adc4-4123-82d0-4c9d854dcceb.jpg')",
+                        backgroundImage: "url('https://source.unsplash.com/random/600x800?human')",
                     }}
                 ></div>
-                <div class="w-2/3 px-2 py-1">
+                <div class="w-3/5 px-2 py-1 font-semibold">
                     <h1 class="text-gray-900 font-bold text-2xl">Arushi Joshi</h1>
                     <p class="text-gray-600 text-sm">Entry time: 16:04</p>
                     <p class="text-gray-600 text-sm">Exit time: -</p>

@@ -15,9 +15,9 @@ export const Footer = () => {
                     </div>
                 </div>
                 <div className="flex space-x-6 mt-8">
-                    <span className="text-3xl text-white">
+                    {/* <span className="text-3xl text-white">
                         <i className="fa-brands fa-facebook"></i>
-                    </span>
+                    </span> */}
                     <span className="text-3xl text-white">
                         <i className="fa-brands fa-twitter"></i>
                     </span>
@@ -31,17 +31,10 @@ export const Footer = () => {
                 <div className="mt-8">
                     <ul className="flex flex-col space-y-4 md:space-y-0 md:flex-row md:space-x-6 lg:space-x-12 items-start md:items-center font-semibold text-base text-gray-700 dark:text-gray-100">
                         <li>About us</li>
-                        <li>Company History</li>
                         <li>Our Team</li>
-                        <li>Our Vision</li>
-                        <li>Press Release</li>
                     </ul>
                 </div>
-                <p className="text-sm text-gray-500 dark:text-gray-400 mt-6">
-                    Lorem ipsum dolor sit amet, consectetur adipiscing elit. Id lectus mattis in
-                    nunc lorem nullam phasellus fringilla eget. Quis in amet interdum arcu
-                    suspendisse urna, leo non sed.
-                </p>
+                <p className="text-sm text-gray-500 dark:text-gray-400 mt-6">Team Cyber Catalyst</p>
             </div>
         </footer>
     );
