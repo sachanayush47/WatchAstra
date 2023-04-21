@@ -19,5 +19,6 @@ router.post("/register-policeman", verifyAdmin, registerPoliceman);
 router.get("/dashboard-details", verifyAdmin, getDashboardDetails);
 router.get("/session-info/:sid", verifyAdmin, getSessionInfo);
 router.get("/current-session", verifyAdmin, getCurrSessionInfo);
+router.get("/hi", (req, res) => res.send("hiiiiiii"));
 
 export default router;

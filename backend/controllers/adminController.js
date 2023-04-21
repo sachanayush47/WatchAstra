@@ -20,16 +20,25 @@ const createSession = asyncHandler(async (req, res) => {
         throw new Error("Already a active session");
     }
 
-    const { geoFencing } = req.body;
+    const { geoFencing, startDateTime, endDateTime, bandobustName, center } = req.body;
 
-    if (!geoFencing) {
+    if (!(geoFencing && startDateTime && endDateTime && bandobustName && center)) {
         res.status(400);
-        throw new Error("Geo fencing missing");
+        throw new Error("All inputs required");
     }
 
     const updatedResult = await Admin.findByIdAndUpdate(
         { _id: req.admin.id },
-        { currSession: { geoFencing, status: "active" } },
+        {
+            currSession: {
+                geoFencing,
+                status: "active",
+                startDateTime,
+                endDateTime,
+                bandobustName,
+                center,
+            },
+        },
         { new: true }
     ).select("-password");
 
@@ -174,6 +183,11 @@ const getSessionInfo = asyncHandler(async (req, res) => {
 // @route   GET /api/admin/
 // @access  Private
 const getCurrSessionInfo = asyncHandler(async (req, res) => {
+    if (!req.admin.currSession) {
+        res.status(400);
+        throw new Error("No active session");
+    }
+
     res.status(200).json(req.admin.currSession);
 });
 

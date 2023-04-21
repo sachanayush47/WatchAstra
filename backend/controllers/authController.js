@@ -49,7 +49,10 @@ const signIn = asyncHandler(async (req, res) => {
             .status(200)
             .json(admin);
         return;
-    } else res.status(400).send("Invalid Credentials");
+    } else {
+        res.status(401);
+        throw new Error("Invalid credentials");
+    }
 });
 
 const signOut = asyncHandler(async (req, res) => {

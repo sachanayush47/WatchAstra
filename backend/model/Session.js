@@ -7,9 +7,26 @@ const sessionSchema = new mongoose.Schema(
             default: [],
             required: true,
         },
+        center: {
+            type: [Number],
+            default: [],
+            required: true,
+        },
         status: {
             type: String,
             default: "",
+        },
+        startTime: {
+            type: Date,
+            required: true,
+        },
+        endTime: {
+            type: Date,
+            required: true,
+        },
+        bandobustName: {
+            type: String,
+            required: true,
         },
         police: {
             type: [
