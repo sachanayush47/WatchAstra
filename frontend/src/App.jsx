@@ -4,7 +4,7 @@ import Navigation from "./components/Navigation";
 import { createBrowserRouter, Outlet, RouterProvider } from "react-router-dom";
 import Home from "./pages/Home";
 import Login from "./pages/Login";
-// import Register from "./pages/Register";
+import Register from "./pages/Register";
 import { Footer } from "./components/Footer";
 
 import "react-toastify/dist/ReactToastify.css";
@@ -53,10 +53,10 @@ const router = createBrowserRouter([
         path: "/login",
         element: <Login />,
     },
-    // {
-    //     path: "/register",
-    //     element: <Register />,
-    // },
+    {
+         path: "/register",
+         element: <Register />,
+    },
     ,
 ]);
 
