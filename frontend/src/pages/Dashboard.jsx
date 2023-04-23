@@ -7,14 +7,23 @@ import * as turf from "@turf/helpers";
 import booleanContains from "@turf/boolean-contains";
 import UserCard from "../components/UserCard";
 import axios from "axios";
-import { notifyError } from "../utils/toastify";
+import { notifyError, notifySuccess } from "../utils/toastify";
 
 import moment from "moment";
 
 import SimpleBar from "simplebar-react";
 import "simplebar-react/dist/simplebar.min.css";
+import { useNavigate } from "react-router-dom";
+
+const COLORS = {
+    GREEN: "#07f847",
+    RED: "#f80707",
+    YELLOW: "#e8f807",
+};
 
 const Dashboard = () => {
+    const navigate = useNavigate();
+
     const mapContainer = useRef(null);
     const map = useRef(null);
     const draw = useRef(null);
@@ -24,15 +33,7 @@ const Dashboard = () => {
 
     const [polygon, setPolygon] = useState([[]]);
 
-    const loc = [
-        [77.03054099674944, 28.494323200639917],
-        [77.03444629307529, 28.49922845487376],
-        [77.03496127720587, 28.495928339492906],
-        [77.0309916078644, 28.495456886014523],
-        [77.03054099674944, 28.498323290639917],
-    ];
-
-    const [update, setUpdate] = useState(true);
+    const [police, setPolice] = useState([]);
 
     const [currSession, setCurrSession] = useState({});
 
@@ -42,11 +43,12 @@ const Dashboard = () => {
         const fetchPolygon = async () => {
             let res = {
                 data: {
-                    center: loc[0],
+                    center: [77.03054099674944, 28.494323200639917],
                 },
             };
             try {
                 res = await axios.get("/admin/current-session");
+                setPolice(res.data.police);
                 setCurrSession(res.data);
             } catch (error) {
                 notifyError(error.response.data.err);
@@ -94,22 +96,45 @@ const Dashboard = () => {
                     },
                 });
 
-                // setInterval(() => {
-                //     console.log(loc[Math.random() * 4]);
-                //     const marker1 = new mapboxgl.Marker()
-                //         .setLngLat(loc[Math.floor(Math.random() * 5)])
-                //         .addTo(map.current);
-                // }, 5000);
+                setInterval(() => {
+                    axios.get("/admin/current-session").then((res) => setPolice(res.data.police));
+                }, 10000);
             });
         };
 
         fetchPolygon();
     });
 
-    // const poly = turf.polygon([loc]);
-    // const point = turf.point([77.03681319426141, 28.141174130993329]);
+    useEffect(() => {
+        if (map.current) {
+            map.current.on("load", () => {
+                const poly = turf.polygon(currSession.geoFencing);
 
-    // console.log(booleanContains(poly, point));
+                for (let i = 0; i < police.length; ++i) {
+                    if (police[i].currLocation.length != 0) {
+                        const popup = new mapboxgl.Popup({ offset: 25 }).setText(police[i].name);
+                        const point = turf.point(police[i].currLocation);
+                        const inside = booleanContains(poly, point);
+                        new mapboxgl.Marker({ color: inside ? COLORS.GREEN : COLORS.RED })
+                            .setLngLat(police[i].currLocation)
+                            .setPopup(popup)
+                            .addTo(map.current);
+                    }
+                }
+            });
+        }
+    }, [police]);
+
+    const terminateSession = async (e) => {
+        e.preventDefault();
+        try {
+            const res = await axios.put("/admin/terminate-current-session");
+            navigate("/create-bandobust");
+            notifySuccess(res.data.message);
+        } catch (error) {
+            notifyError(error.response.data.err);
+        }
+    };
 
     return (
         <div className="bg-slate-900 ">
@@ -177,7 +202,19 @@ const Dashboard = () => {
 
                         <SimpleBar style={{ maxHeight: 700 }}>
                             <nav data-dev-hint="main navigation" className="user-card">
-                                <a
+                                {police.map((p) => {
+                                    return (
+                                        <a
+                                            href="#"
+                                            className="flex items-center space-x-2 py-2 transition duration-200 hover:bg-gray-700 hover:text-white"
+                                        >
+                                            <div class="w-full">
+                                                <UserCard police={p} />
+                                            </div>
+                                        </a>
+                                    );
+                                })}
+                                {/* <a
                                     href="#"
                                     className="flex items-center space-x-2 py-2 transition duration-200 hover:bg-gray-700 hover:text-white"
                                 >
@@ -224,7 +261,7 @@ const Dashboard = () => {
                                     <div class="w-full">
                                         <UserCard />
                                     </div>
-                                </a>
+                                </a> */}
                             </nav>
                         </SimpleBar>
                     </div>
@@ -232,6 +269,7 @@ const Dashboard = () => {
                     <nav data-dev-hint="second-main-navigation or footer navigation">
                         <hr />
                         <button
+                            onClick={terminateSession}
                             className="bg-blue-500 text-white active:bg-blue-600 font-bold uppercase text-base px-8 py-3 rounded shadow-md hover:shadow-lg outline-none focus:outline-none m-4 ease-linear transition-all duration-150"
                             type="button"
                         >

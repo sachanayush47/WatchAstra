@@ -7,8 +7,8 @@ const verifyPoliceman = asyncHandler(async (policeUsername, key) => {
     const police = await Police.findOne({ policeUsername });
     if (!police) return false;
 
-    if (police.key == key) return true;
-    return false;
+    if (police.key == key) return { isValid: true, police };
+    return { isValid: false, police };
 });
 
 // @desc    Creates a new session(Bandobust)
@@ -49,9 +49,9 @@ const createSession = asyncHandler(async (req, res) => {
 // @route   POST /api/admin/nfc-attendence
 // @access  Private
 const NfcAttendence = asyncHandler(async (req, res) => {
-    const { adminUsername, policeUsername, name, phone, key } = req.body;
+    const { adminUsername, policeUsername, key } = req.body;
 
-    if (!(adminUsername && policeUsername && name && phone && key)) {
+    if (!(adminUsername && policeUsername && key)) {
         res.status(400);
         throw new Error("All inputs are required");
     }
@@ -70,7 +70,7 @@ const NfcAttendence = asyncHandler(async (req, res) => {
 
     const isPolicemanValid = await verifyPoliceman(policeUsername, key);
 
-    if (!isPolicemanValid) {
+    if (!isPolicemanValid.isValid) {
         res.status(400);
         throw new Error("Invalid police username or key");
     }
@@ -91,12 +91,14 @@ const NfcAttendence = asyncHandler(async (req, res) => {
         } else {
             policeDocument.entry = Date.now();
             policeDocument.lastUpdated = Date.now();
+            policeDocument.name = isPolicemanValid.police.name;
+            policeDocument.phone = isPolicemanValid.police.phone;
         }
     } else {
         const newPoliceDocument = {
             policeUsername: policeUsername,
-            name: name,
-            phone: phone,
+            name: isPolicemanValid.police.name,
+            phone: isPolicemanValid.police.phone,
             lastUpdated: Date.now(),
             entry: Date.now(),
             status: "Verified",
@@ -134,14 +136,85 @@ const registerPoliceman = asyncHandler(async (req, res) => {
 // @route   PUT /api/admin/--------
 // @access  Private
 const updatePoliceLocation = asyncHandler(async (req, res) => {
-    // TODO:
+    const { adminUsername, policeUsername, key, location } = req.body;
+
+    if (!(adminUsername && policeUsername && key && location)) {
+        res.status(400);
+        throw new Error("All inputs are required");
+    }
+
+    // const police = await Police.findOne({ policeUsername });
+    // if (!police) {
+    //     res.status(404);
+    //     throw new Error("Invalid user");
+    // }
+
+    // console.log(police.key);
+    // console.log(key);
+
+    // if (police.key === key) {
+    //     res.status(401);
+    //     throw new Error("Invalid credentials");
+    // }
+
+    const admin = await Admin.findOne({ adminUsername });
+
+    if (!admin) {
+        res.status(400);
+        throw new Error("Invalid admin username");
+    }
+
+    if (!admin.currSession) {
+        res.status(400);
+        throw new Error("No active session is there");
+    }
+
+    const isPolicemanValid = await verifyPoliceman(policeUsername, key);
+
+    if (!isPolicemanValid.isValid) {
+        res.status(400);
+        throw new Error("Invalid police username or key");
+    }
+
+    const policeArray = admin.currSession.police;
+    const policeDocumentIndex = policeArray.findIndex((i) => i.policeUsername == policeUsername);
+    const policeDocument = policeArray[policeDocumentIndex];
+
+    policeDocument.currLocation = location;
+    policeDocument.allLocation.push(location);
+    await admin.save();
+    res.status(200).json({ message: "Ok" });
 });
 
 // @desc    Closes the current active session(Bandobust)
 // @route   PUT /api/admin/
 // @access  Private
 const terminateCurrentSession = asyncHandler(async (req, res) => {
-    // TODO:
+    if (!req.admin.currSession) {
+        res.status(404);
+        throw new Error("Bad request");
+    }
+
+    const admin = req.admin;
+    const newSession = {
+        adminUsername: admin.adminUsername,
+        geoFencing: admin.currSession.geoFencing,
+        center: admin.currSession.center,
+        status: "Inactive",
+        startDateTime: admin.currSession.startDateTime,
+        endDateTime: admin.currSession.endDateTime,
+        bandobustName: admin.currSession.bandobustName,
+        police: admin.currSession.police,
+    };
+
+    await Session.create(newSession);
+    const data = await Admin.findByIdAndUpdate(
+        { _id: req.admin.id },
+        { currSession: null },
+        { new: true }
+    );
+
+    res.status(200).json({ message: "Ok" });
 });
 
 // @desc    Get admin dashboard details
@@ -163,7 +236,7 @@ const getDashboardDetails = asyncHandler(async (req, res) => {
 const getSessionInfo = asyncHandler(async (req, res) => {
     const { sid } = req.params;
 
-    const session = await Session.findById(sessionId);
+    const session = await Session.findById(sid);
 
     if (!sid) {
         res.status(400);
@@ -198,4 +271,6 @@ export {
     getDashboardDetails,
     getCurrSessionInfo,
     getSessionInfo,
+    terminateCurrentSession,
+    updatePoliceLocation,
 };

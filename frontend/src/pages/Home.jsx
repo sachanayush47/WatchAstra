@@ -1,6 +1,32 @@
-import React from "react";
-
+import React, { useState, useEffect, useRef } from "react";
+import BIRDS from "vanta/dist/vanta.rings.min";
+import * as THREE from "three";
 export default function Home() {
+    const [vantaEffect, setVantaEffect] = useState(0);
+    const vantaRef = useRef(null);
+
+    useEffect(() => {
+        if (!vantaEffect) {
+            setVantaEffect(
+                BIRDS({
+                    el: vantaRef.current,
+                    THREE: THREE,
+                    mouseControls: true,
+                    touchControls: true,
+                    gyroControls: false,
+                    minHeight: 200.0,
+                    minWidth: 200.0,
+                    scale: 1.0,
+                    scaleMobile: 1.0,
+                    backgroundColor: 0x0,
+                })
+            );
+        }
+        return () => {
+            if (vantaEffect) vantaEffect.destroy();
+        };
+    }, [vantaEffect]);
+
     return (
         <>
             <main>
@@ -11,23 +37,24 @@ export default function Home() {
                     }}
                 >
                     <div
+                        ref={vantaRef}
                         id="vanta"
                         className="absolute top-0 w-full h-full bg-center bg-cover"
-                        style={{
-                            backgroundImage:
-                                "url('https://images.unsplash.com/photo-1557081999-0ea3e23579d2?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1771&q=80')",
-                        }}
+                        // style={{
+                        //     backgroundImage:
+                        //         "url('https://images.unsplash.com/photo-1557081999-0ea3e23579d2?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1771&q=80')",
+                        // }}
                     >
-                        <span
+                        {/* <span
                             id="blackOverlay"
-                            className="w-full h-full absolute opacity-75 bg-black"
-                        ></span>
+                            className="w-full h-full absolute opacity-50 bg-black"
+                        ></span> */}
                     </div>
                     <div className="container relative mx-auto">
                         <div className="items-center flex flex-wrap">
                             <div className="w-full lg:w-6/12 px-4 ml-auto mr-auto text-center">
-                                <div className="pr-12">
-                                    <h1 className="text-white font-semibold text-5xl">
+                                <div className="">
+                                    <h1 className="text-white font-semibold text-4xl">
                                         Watch Astra
                                         <span>&nbsp;</span>
                                         <i class="fa-sharp fa-solid fa-shield-halved"></i>
@@ -39,28 +66,9 @@ export default function Home() {
                             </div>
                         </div>
                     </div>
-                    <div
-                        className="top-auto bottom-0 left-0 right-0 w-full absolute pointer-events-none overflow-hidden"
-                        style={{ height: "70px" }}
-                    >
-                        <svg
-                            className="absolute bottom-0 overflow-hidden"
-                            xmlns="http://www.w3.org/2000/svg"
-                            preserveAspectRatio="none"
-                            version="1.1"
-                            viewBox="0 0 2560 100"
-                            x="0"
-                            y="0"
-                        >
-                            <polygon
-                                className="text-gray-300 fill-current"
-                                points="2560 0 2560 100 0 100"
-                            ></polygon>
-                        </svg>
-                    </div>
                 </div>
 
-                <section className="bg-gray-300 -mt-24">
+                <section className="bg-black -mt-24">
                     <div className="container mx-auto px-4">
                         <div className="flex flex-wrap">
                             <div className="lg:pt-12 pt-6 w-full md:w-4/12 px-4 text-center">

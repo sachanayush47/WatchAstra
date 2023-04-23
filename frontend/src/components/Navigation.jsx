@@ -49,8 +49,18 @@ export default function Navigation() {
                                             className="px-3 py-2 flex items-center text-xs uppercase font-bold leading-snug text-white hover:opacity-75"
                                             href="#pablo"
                                         >
-                                            <i className="fa-solid fa-chart-simple   text-lg leading-lg text-white opacity-75"></i>
+                                            <i className="fa-solid fa-chart-simple text-lg leading-lg text-white opacity-75"></i>
                                             <span className="ml-2">Dashboard</span>
+                                        </Link>
+                                    </li>
+                                    <li className="nav-item">
+                                        <Link
+                                            to="/history"
+                                            className="px-3 py-2 flex items-center text-xs uppercase font-bold leading-snug text-white hover:opacity-75"
+                                            href="#pablo"
+                                        >
+                                            <i className="fa-sharp fa-solid fa-clock-rotate-left text-lg leading-lg text-white opacity-75"></i>
+                                            <span className="ml-2">History</span>
                                         </Link>
                                     </li>
                                     <li className="nav-item">

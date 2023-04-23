@@ -33,7 +33,8 @@ const sessionSchema = new mongoose.Schema(
                     policeUsername: String,
                     name: String,
                     phone: Number,
-                    location: { lat: Number, long: Number },
+                    currLocation: [],
+                    allLocation: [[]],
                     status: String,
                     lastUpdated: Date,
                     entry: Date,
@@ -64,7 +65,7 @@ const adminSchema = new mongoose.Schema(
         },
         currSession: {
             type: sessionSchema,
-            default: undefined,
+            default: null,
         },
         session: {
             type: [mongoose.SchemaTypes.ObjectId],

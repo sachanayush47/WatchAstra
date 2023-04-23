@@ -7,6 +7,8 @@ import { notifyError, notifySuccess } from "../utils/toastify";
 import * as turf from "@turf/helpers";
 import centroid from "@turf/centroid";
 
+import { useNavigate } from "react-router-dom";
+
 import { DemoContainer } from "@mui/x-date-pickers/internals/demo";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
@@ -22,6 +24,8 @@ const CreateBandobust = () => {
     const [bandobustName, setBandobustName] = useState(null);
     const [startDateTime, setStartDateTime] = useState(dayjs(Date.now()).$d);
     const [endDateTime, setEndDateTime] = useState(dayjs(Date.now()).$d);
+
+    const navigate = useNavigate();
 
     useEffect(() => {
         if (map.current) return; // Initialize map only once
@@ -73,6 +77,7 @@ const CreateBandobust = () => {
                     center: center.geometry.coordinates,
                 });
 
+                navigate("/dashboard");
                 notifySuccess("Successful");
             } catch (error) {
                 notifyError(error.response.data.err);

@@ -2,9 +2,13 @@ import mongoose from "mongoose";
 
 const sessionSchema = new mongoose.Schema(
     {
+        adminUsername: {
+            type: String,
+            required: true,
+        },
         geoFencing: {
-            type: [Number],
-            default: [],
+            type: [[]],
+            default: [[]],
             required: true,
         },
         center: {
@@ -16,11 +20,11 @@ const sessionSchema = new mongoose.Schema(
             type: String,
             default: "",
         },
-        startTime: {
+        startDateTime: {
             type: Date,
             required: true,
         },
-        endTime: {
+        endDateTime: {
             type: Date,
             required: true,
         },
@@ -31,15 +35,16 @@ const sessionSchema = new mongoose.Schema(
         police: {
             type: [
                 {
-                    pid: String,
+                    policeUsername: String,
                     name: String,
                     phone: Number,
-                    currLocation: { lat: Number, long: Number },
-                    allCordinates: [{ lat: Number, long: Number }],
+                    currLocation: [],
+                    allLocation: [[]],
                     status: String,
                     lastUpdated: Date,
                     entry: Date,
                     exit: Date,
+                    credits: Number,
                 },
             ],
             default: [],

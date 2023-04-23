@@ -17,9 +17,16 @@ import Dashboard from "./pages/Dashboard";
 mapboxgl.accessToken = import.meta.env.VITE_MAPBOX_API_KEY;
 
 import axios from "axios";
+import NotFound from "./pages/NotFound";
 axios.defaults.baseURL = "http://localhost:3000/api/";
 axios.defaults.withCredentials = true;
 // axios.defaults.baseURL = "";
+
+DarkReader.enable({
+    brightness: 100,
+    contrast: 100,
+    sepia: 10,
+});
 
 const Layout = () => {
     return (
@@ -39,6 +46,7 @@ const router = createBrowserRouter([
             { path: "/", element: <Home /> },
             { path: "/create-bandobust", element: <CreateBandobust /> },
             { path: "/dashboard", element: <Dashboard /> },
+            { path: "*", element: <NotFound /> },
         ],
     },
     {
