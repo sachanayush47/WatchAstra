@@ -18,7 +18,7 @@ mapboxgl.accessToken = import.meta.env.VITE_MAPBOX_API_KEY;
 
 import axios from "axios";
 import NotFound from "./pages/NotFound";
-axios.defaults.baseURL = "http://localhost:3000/api/";
+axios.defaults.baseURL = import.meta.env.VITE_URL;
 axios.defaults.withCredentials = true;
 // axios.defaults.baseURL = "";
 

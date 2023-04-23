@@ -37,6 +37,8 @@ const Dashboard = () => {
 
     const [currSession, setCurrSession] = useState({});
 
+    let interval;
+
     useEffect(() => {
         if (map.current) return; // Initialize map only once
 
@@ -96,7 +98,7 @@ const Dashboard = () => {
                     },
                 });
 
-                setInterval(() => {
+                interval = setInterval(() => {
                     axios.get("/admin/current-session").then((res) => setPolice(res.data.police));
                 }, 10000);
             });
@@ -122,6 +124,10 @@ const Dashboard = () => {
                     }
                 }
             });
+
+            return () => {
+                clearInterval(interval);
+            };
         }
     }, [police]);
 
