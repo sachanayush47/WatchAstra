@@ -143,20 +143,6 @@ const updatePoliceLocation = asyncHandler(async (req, res) => {
         throw new Error("All inputs are required");
     }
 
-    // const police = await Police.findOne({ policeUsername });
-    // if (!police) {
-    //     res.status(404);
-    //     throw new Error("Invalid user");
-    // }
-
-    // console.log(police.key);
-    // console.log(key);
-
-    // if (police.key === key) {
-    //     res.status(401);
-    //     throw new Error("Invalid credentials");
-    // }
-
     const admin = await Admin.findOne({ adminUsername });
 
     if (!admin) {
@@ -179,6 +165,16 @@ const updatePoliceLocation = asyncHandler(async (req, res) => {
     const policeArray = admin.currSession.police;
     const policeDocumentIndex = policeArray.findIndex((i) => i.policeUsername == policeUsername);
     const policeDocument = policeArray[policeDocumentIndex];
+
+    if (!policeDocument.entry) {
+        res.status(400);
+        throw new Error("Please tap on NFC");
+    }
+
+    if (policeDocument.exit) {
+        res.status(400);
+        throw new Error("Your duty was already completed");
+    }
 
     policeDocument.currLocation = location;
     policeDocument.allLocation.push(location);

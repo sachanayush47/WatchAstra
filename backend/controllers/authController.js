@@ -7,13 +7,17 @@ const signUp = asyncHandler(async (req, res) => {
     const { name, adminUsername, password } = req.body;
 
     // Validate user input
-    if (!(name && adminUsername && password)) throw new Error("All inputs are required");
-
+    if (!(name && adminUsername && password)) {
+        res.status(400);
+        throw new Error("All inputs are required");
+    }
     // Check if user already exist, validate if user exist in our database
     const oldUser = await Admin.findOne({ adminUsername });
 
-    if (oldUser) throw new Error("Account already exist, please login");
-
+    if (oldUser) {
+        res.status(400);
+        throw new Error("Account already exist, please login");
+    }
     // Encrypt user password
     const encryptedPassword = await bcrypt.hash(password, 10);
 

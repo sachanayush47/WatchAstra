@@ -22,6 +22,7 @@ app.use(
             "https://code-daily-sachanayush47.vercel.app",
             "http://192.168.43.197:3000",
             "http://localhost:5173",
+            "http://localhost:5174",
             "http://192.168.1.2:5173",
         ],
         credentials: true,
