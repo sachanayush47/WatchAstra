@@ -1,53 +1,5 @@
 import mongoose from "mongoose";
 
-const sessionSchema = new mongoose.Schema(
-    {
-        geoFencing: {
-            type: [[]],
-            default: [[]],
-        },
-        center: {
-            type: [Number],
-            default: [],
-            required: true,
-        },
-        status: {
-            type: String,
-            default: "",
-        },
-        startDateTime: {
-            type: Date,
-            required: true,
-        },
-        endDateTime: {
-            type: Date,
-            required: true,
-        },
-        bandobustName: {
-            type: String,
-            required: true,
-        },
-        police: {
-            type: [
-                {
-                    policeUsername: String,
-                    name: String,
-                    phone: Number,
-                    currLocation: [],
-                    allLocation: [[]],
-                    status: String,
-                    lastUpdated: Date,
-                    entry: Date,
-                    exit: Date,
-                    credits: Number,
-                },
-            ],
-            default: [],
-        },
-    },
-    { timestamps: true }
-);
-
 const adminSchema = new mongoose.Schema(
     {
         name: {
@@ -62,15 +14,6 @@ const adminSchema = new mongoose.Schema(
         password: {
             type: String,
             required: true,
-        },
-        currSession: {
-            type: sessionSchema,
-            default: null,
-        },
-        session: {
-            type: [mongoose.SchemaTypes.ObjectId],
-            ref: "Session",
-            default: [],
         },
     },
     { timestamps: true }

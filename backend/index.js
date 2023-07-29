@@ -15,23 +15,14 @@ const app = express();
 
 app.use(
     cors({
-        origin: [
-            "http://localhost:3000",
-            "http://localhost:3001",
-            "http://localhost:3002",
-            "https://code-daily-sachanayush47.vercel.app",
-            "http://192.168.43.197:3000",
-            "http://localhost:5173",
-            "http://localhost:5174",
-            "http://192.168.1.2:5173",
-        ],
+        origin: ["http://localhost:3000", "http://localhost:5173", "http://localhost:5174"],
         credentials: true,
         allowedHeaders: ["Content-Type", "Authorization"],
     })
 );
 
 app.use(express.json());
-app.use(express.urlencoded());
+app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 
 app.use("/api/auth", authRouter);

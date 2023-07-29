@@ -32,7 +32,7 @@ const Dashboard = () => {
     const [zoom, setZoom] = useState(14);
 
     const [polygon, setPolygon] = useState([[]]);
-
+    const [mapLoaded, setMapLoaded] = useState(false);
     const [police, setPolice] = useState([]);
 
     const [currSession, setCurrSession] = useState({});
@@ -54,6 +54,7 @@ const Dashboard = () => {
                 setCurrSession(res.data);
             } catch (error) {
                 notifyError(error.response.data.err);
+                return;
             }
 
             map.current = new mapboxgl.Map({
@@ -98,8 +99,13 @@ const Dashboard = () => {
                     },
                 });
 
+                setMapLoaded(true);
+
                 interval = setInterval(() => {
-                    axios.get("/admin/current-session").then((res) => setPolice(res.data.police));
+                    axios.get("/admin/current-session").then((res) => {
+                        console.log(res.data.police);
+                        setPolice(res.data.police);
+                    });
                 }, 10000);
             });
         };
@@ -108,22 +114,20 @@ const Dashboard = () => {
     });
 
     useEffect(() => {
-        if (map.current) {
-            map.current.on("load", () => {
-                const poly = turf.polygon(currSession.geoFencing);
+        if (map.current && mapLoaded) {
+            const poly = turf.polygon(currSession.geoFencing);
 
-                for (let i = 0; i < police.length; ++i) {
-                    if (police[i].currLocation.length != 0) {
-                        const popup = new mapboxgl.Popup({ offset: 25 }).setText(police[i].name);
-                        const point = turf.point(police[i].currLocation);
-                        const inside = booleanContains(poly, point);
-                        new mapboxgl.Marker({ color: inside ? COLORS.GREEN : COLORS.RED })
-                            .setLngLat(police[i].currLocation)
-                            .setPopup(popup)
-                            .addTo(map.current);
-                    }
+            for (let i = 0; i < police.length; ++i) {
+                if (police[i].currLocation.length != 0) {
+                    const popup = new mapboxgl.Popup({ offset: 25 }).setText(police[i].name);
+                    const point = turf.point(police[i].currLocation);
+                    const inside = booleanContains(poly, point);
+                    new mapboxgl.Marker({ color: inside ? COLORS.GREEN : COLORS.RED })
+                        .setLngLat(police[i].currLocation)
+                        .setPopup(popup)
+                        .addTo(map.current);
                 }
-            });
+            }
 
             return () => {
                 clearInterval(interval);
@@ -144,25 +148,28 @@ const Dashboard = () => {
 
     return (
         <div className="bg-slate-900 ">
-            <div class="relative min-h-screen md:flex" data-dev-hint="container">
-                <input type="checkbox" id="menu-open" class="hidden" />
+            <div className="relative min-h-screen md:flex" data-dev-hint="container">
+                <input type="checkbox" id="menu-open" className="hidden" />
 
                 <header
-                    class="bg-gray-600 text-gray-100 flex justify-between md:hidden"
+                    className="bg-gray-600 text-gray-100 flex justify-between md:hidden"
                     data-dev-hint="mobile menu bar"
                 >
-                    <a href="#" class="block p-4 text-white font-bold whitespace-nowrap truncate">
+                    <a
+                        href="#"
+                        className="block p-6 text-white font-bold whitespace-nowrap truncate"
+                    >
                         Officer's detail page
                     </a>
 
                     <label
                         for="menu-open"
                         id="mobile-menu-button"
-                        class="m-2 p-2 mr-6 focus:outline-none hover:text-white hover:bg-gray-700 rounded-md"
+                        className="m-2 p-2 mr-6 focus:outline-none hover:text-white hover:bg-gray-700 rounded-md"
                     >
                         <svg
                             id="menu-open-icon"
-                            class="h-6 w-6 mr-0 transition duration-200 ease-in-out"
+                            className="h-6 w-6 mr-0 transition duration-200 ease-in-out"
                             xmlns="http://www.w3.org/2000/svg"
                             fill="none"
                             viewBox="0 0 24 24"
@@ -177,7 +184,7 @@ const Dashboard = () => {
                         </svg>
                         <svg
                             id="menu-close-icon"
-                            class="h-6 w-6 transition duration-200 ease-in-out"
+                            className="h-6 w-6 transition duration-200 ease-in-out"
                             xmlns="http://www.w3.org/2000/svg"
                             fill="none"
                             viewBox="0 0 24 24"
@@ -195,14 +202,14 @@ const Dashboard = () => {
 
                 <aside
                     id="sidebar"
-                    class="z-50 bg-gray-800 text-gray-100 md:w-1/4 w-5/6 space-y-6 pt-6 px-0 absolute inset-y-0 left-0 transform md:relative md:translate-x-0 transition duration-200 ease-in-out  md:flex md:flex-col md:justify-between "
+                    className="z-50 bg-gray-800 text-gray-100 md:w-1/4 w-5/6 space-y-6 pt-6 px-0 absolute inset-y-0 left-0 transform md:relative md:translate-x-0 transition duration-200 ease-in-out md:flex md:flex-col md:justify-between "
                     data-dev-hint="sidebar; px-0 for frameless; px-2 for visually inset the navigation"
                 >
                     <div
-                        class="flex flex-col space-y-6"
+                        className="flex flex-col space-y-6"
                         data-dev-hint="optional div for having an extra footer navigation"
                     >
-                        <span class="mx-4 text-2xl font-extrabold whitespace-nowrap truncate">
+                        <span className="mx-6 text-2xl font-extrabold whitespace-nowrap truncate">
                             Officer's details
                         </span>
 
@@ -211,63 +218,16 @@ const Dashboard = () => {
                                 {police.map((p) => {
                                     return (
                                         <a
+                                            key={p.policeUsername}
                                             href="#"
                                             className="flex items-center space-x-2 py-2 transition duration-200 hover:bg-gray-700 hover:text-white"
                                         >
-                                            <div class="w-full">
+                                            <div className="w-full">
                                                 <UserCard police={p} />
                                             </div>
                                         </a>
                                     );
                                 })}
-                                {/* <a
-                                    href="#"
-                                    className="flex items-center space-x-2 py-2 transition duration-200 hover:bg-gray-700 hover:text-white"
-                                >
-                                    <div class="w-full">
-                                        <UserCard />
-                                    </div>
-                                </a>
-                                <a
-                                    href="#"
-                                    className="flex items-center space-x-2 py-2 transition duration-200 hover:bg-gray-700 hover:text-white"
-                                >
-                                    <div class="w-full">
-                                        <UserCard />
-                                    </div>
-                                </a>
-                                <a
-                                    href="#"
-                                    className="flex items-center space-x-2 py-2 transition duration-200 hover:bg-gray-700 hover:text-white"
-                                >
-                                    <div class="w-full">
-                                        <UserCard />
-                                    </div>
-                                </a>
-                                <a
-                                    href="#"
-                                    className="flex items-center space-x-2 py-2 transition duration-200 hover:bg-gray-700 hover:text-white"
-                                >
-                                    <div class="w-full">
-                                        <UserCard />
-                                    </div>
-                                </a>
-                                <a
-                                    href="#"
-                                    className="flex items-center space-x-2 py-2 transition duration-200 hover:bg-gray-700 hover:text-white"
-                                >
-                                    <div class="w-full">
-                                        <UserCard />
-                                    </div>
-                                </a>
-                                <a
-                                    href="#"
-                                    className="flex items-center space-x-2 py-2 transition duration-200 hover:bg-gray-700 hover:text-white"
-                                >
-                                    <div class="w-full">
-                                        <UserCard />
-                                    </div>
-                                </a> */}
                             </nav>
                         </SimpleBar>
                     </div>
@@ -284,31 +244,31 @@ const Dashboard = () => {
                     </nav>
                 </aside>
 
-                <main id="content" class="flex-1 p-6 lg:px-8">
-                    <div class="max-w-7xl mx-auto">
+                <main id="content" className="flex-1 p-1 lg:px-8">
+                    <div className="max-w-7xl mx-auto">
                         {currSession.startDateTime && (
-                            <>
-                                <span class="text-xs font-bold inline-block py-1 px-2 rounded text-pink-600 bg-pink-200 uppercase last:mr-0 mr-1">
+                            <div className="p-8">
+                                <span className="text-xs font-bold inline-block py-1 px-2 rounded text-pink-600 bg-pink-200 uppercase last:mr-0 mr-1">
                                     Start time:{" "}
                                     {moment
                                         .utc(currSession.startDateTime)
                                         .local()
                                         .format("YYYY-MMM-DD h:mm A")}
                                 </span>
-                                <span class="text-xs font-bold inline-block py-1 px-2 rounded text-pink-600 bg-pink-200 uppercase last:mr-0 mr-1">
+                                <span className="text-xs font-bold inline-block py-1 px-2 rounded text-pink-600 bg-pink-200 uppercase last:mr-0 mr-1">
                                     End time:{" "}
                                     {moment
                                         .utc(currSession.endDateTime)
                                         .local()
                                         .format("YYYY-MMM-DD h:mm A")}
                                 </span>
-                                <span class="text-xs font-bold inline-block py-1 px-2 rounded text-pink-600 bg-pink-200 uppercase last:mr-0 mr-1">
+                                <span className="text-xs font-bold inline-block py-1 px-2 rounded text-pink-600 bg-pink-200 uppercase last:mr-0 mr-1">
                                     {currSession.bandobustName}
                                 </span>
-                            </>
+                            </div>
                         )}
-                        <div class="px-4 py-6 sm:px-0">
-                            <div class="border-4 border-blue-200 rounded-lg">
+                        <div className="px-4 py-6 sm:px-0">
+                            <div className="border-4 border-blue-200 rounded-lg">
                                 <div ref={mapContainer} className="map-container-dashboard" />
                             </div>
                         </div>

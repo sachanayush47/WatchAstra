@@ -16,9 +16,11 @@ const sessionSchema = new mongoose.Schema(
             default: [],
             required: true,
         },
+
+        // 1 - Active, 0 - Inactive
         status: {
-            type: String,
-            default: "",
+            type: Number,
+            default: 1,
         },
         startDateTime: {
             type: Date,

@@ -2,8 +2,9 @@ import asyncHandler from "express-async-handler";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import Admin from "../model/Admin.js";
+import Police from "../model/Police.js";
 
-const signUp = asyncHandler(async (req, res) => {
+const signUpAdmin = asyncHandler(async (req, res) => {
     const { name, adminUsername, password } = req.body;
 
     // Validate user input
@@ -32,7 +33,7 @@ const signUp = asyncHandler(async (req, res) => {
     res.status(201).json(admin);
 });
 
-const signIn = asyncHandler(async (req, res) => {
+const signInAdmin = asyncHandler(async (req, res) => {
     const { adminUsername, password } = req.body;
 
     // Validate user input
@@ -59,8 +60,49 @@ const signIn = asyncHandler(async (req, res) => {
     }
 });
 
-const signOut = asyncHandler(async (req, res) => {
+const signOutAdmin = asyncHandler(async (req, res) => {
     res.clearCookie("access_token", { sameSite: "none", secure: true }).status(200).json();
 });
 
-export { signUp, signIn, signOut };
+// @desc    Registers policeman
+// @route   POST /api/auth/client/create-account
+// @access  Private
+const signUpClient = asyncHandler(async (req, res) => {
+    const { name, policeUsername, key, phone } = req.body;
+
+    if (!(name && policeUsername && key && phone)) {
+        res.status(400);
+        throw new Error("All inputs are required");
+    }
+
+    const police = await Police.findOne({ policeUsername });
+    if (police) {
+        res.status(409);
+        throw new Error("Policeman was already registered");
+    }
+
+    const newPolice = await Police.create({ name, policeUsername, key, phone });
+    res.status(200).json(newPolice);
+});
+
+// @desc    Registers policeman
+// @route   POST /api/auth/client/create-account
+// @access  Private
+const signInClient = asyncHandler(async (req, res) => {
+    const { policeUsername, key } = req.body;
+
+    if (!(policeUsername && key)) {
+        res.status(400);
+        throw new Error("All inputs are required");
+    }
+
+    const police = await Police.findOne({ policeUsername, key });
+    if (!police) {
+        res.status(404);
+        throw new Error("Invalid credentials");
+    }
+
+    res.status(200).json(true);
+});
+
+export { signUpAdmin, signInAdmin, signOutAdmin, signUpClient, signInClient };
