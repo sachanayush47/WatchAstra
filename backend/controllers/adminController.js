@@ -97,7 +97,7 @@ const NfcAttendence = asyncHandler(async (req, res) => {
     }
 
     const updatedResult = await isActiveBandobust.save();
-    res.status(200).json(updatedResult);
+    res.status(200).json({ message: "Ok" });
 });
 
 // @desc    Updates policeman geolocation coming from android app

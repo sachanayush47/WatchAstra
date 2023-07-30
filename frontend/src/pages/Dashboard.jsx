@@ -247,7 +247,7 @@ const Dashboard = () => {
                 <main id="content" className="flex-1 p-1 lg:px-8">
                     <div className="max-w-7xl mx-auto">
                         {currSession.startDateTime && (
-                            <div className="p-8">
+                            <div className="pt-4">
                                 <span className="text-xs font-bold inline-block py-1 px-2 rounded text-pink-600 bg-pink-200 uppercase last:mr-0 mr-1">
                                     Start time:{" "}
                                     {moment

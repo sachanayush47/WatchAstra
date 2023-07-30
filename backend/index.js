@@ -15,7 +15,14 @@ const app = express();
 
 app.use(
     cors({
-        origin: ["http://localhost:3000", "http://localhost:5173", "http://localhost:5174"],
+        origin: [
+            "http://localhost:3000",
+            "http://localhost:5173",
+            "http://localhost:5174",
+            "http://192.168:1:5:5173",
+            "http://192.168:1:5:5174",
+            "https://watch-astra.vercel.app",
+        ],
         credentials: true,
         allowedHeaders: ["Content-Type", "Authorization"],
     })
