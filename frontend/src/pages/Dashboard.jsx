@@ -120,10 +120,13 @@ const Dashboard = () => {
             for (let i = 0; i < police.length; ++i) {
                 if (police[i].currLocation.length != 0) {
                     const popup = new mapboxgl.Popup({ offset: 25 }).setText(police[i].name);
-                    const point = turf.point(police[i].currLocation);
+                    const point = turf.point([
+                        police[i].currLocation[0].long,
+                        police[i].currLocation[0].lat,
+                    ]);
                     const inside = booleanContains(poly, point);
                     new mapboxgl.Marker({ color: inside ? COLORS.GREEN : COLORS.RED })
-                        .setLngLat(police[i].currLocation)
+                        .setLngLat([police[i].currLocation[0].long, police[i].currLocation[0].lat])
                         .setPopup(popup)
                         .addTo(map.current);
                 }
