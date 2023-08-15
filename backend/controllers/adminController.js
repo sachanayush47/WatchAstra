@@ -124,7 +124,7 @@ const updatePoliceLocation = asyncHandler(async (req, res) => {
         throw new Error("Invalid police username or key");
     }
 
-    const policeArray = isActiveBandobust.currSession.police;
+    const policeArray = isActiveBandobust.police;
     const policeDocumentIndex = policeArray.findIndex((i) => i.policeUsername == policeUsername);
     const policeDocument = policeArray[policeDocumentIndex];
 
