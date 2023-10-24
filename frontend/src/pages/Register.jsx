@@ -15,7 +15,7 @@ export default function Login() {
         e.preventDefault();
 
         try {
-            const res = await axios.post("/auth/create-account", { name, adminUsername, password });
+            const res = await axios.post("/auth/admin/create-account", { name, adminUsername, password });
             console.log(res.data);
             navigate("/login");
         } catch (error) {
@@ -42,10 +42,7 @@ export default function Login() {
                                 <div className="flex-auto px-4 lg:px-10 py-10 pt-0">
                                     <form>
                                         <div className="relative w-full mb-3">
-                                            <label
-                                                className="block uppercase text-gray-800 text-xs font-bold mb-2"
-                                                htmlFor="grid-password"
-                                            >
+                                            <label className="block uppercase text-gray-800 text-xs font-bold mb-2" htmlFor="grid-password">
                                                 Name
                                             </label>
                                             <input
@@ -57,10 +54,7 @@ export default function Login() {
                                             />
                                         </div>
                                         <div className="relative w-full mb-3">
-                                            <label
-                                                className="block uppercase text-gray-800 text-xs font-bold mb-2"
-                                                htmlFor="grid-password"
-                                            >
+                                            <label className="block uppercase text-gray-800 text-xs font-bold mb-2" htmlFor="grid-password">
                                                 Username
                                             </label>
                                             <input
@@ -73,10 +67,7 @@ export default function Login() {
                                         </div>
 
                                         <div className="relative w-full mb-3">
-                                            <label
-                                                className="block uppercase text-gray-800 text-xs font-bold mb-2"
-                                                htmlFor="grid-password"
-                                            >
+                                            <label className="block uppercase text-gray-800 text-xs font-bold mb-2" htmlFor="grid-password">
                                                 Password
                                             </label>
                                             <input
