@@ -36,8 +36,7 @@ const Dashboard = () => {
     const [police, setPolice] = useState([]);
 
     const [currSession, setCurrSession] = useState({});
-
-    let interval;
+    const interval = useRef();
 
     useEffect(() => {
         if (map.current) return; // Initialize map only once
@@ -101,9 +100,8 @@ const Dashboard = () => {
 
                 setMapLoaded(true);
 
-                interval = setInterval(() => {
+                interval.current = setInterval(() => {
                     axios.get("/admin/current-session").then((res) => {
-                        console.log(res.data.police);
                         setPolice(res.data.police);
                     });
                 }, 10000);
@@ -120,10 +118,7 @@ const Dashboard = () => {
             for (let i = 0; i < police.length; ++i) {
                 if (police[i].currLocation.length != 0) {
                     const popup = new mapboxgl.Popup({ offset: 25 }).setText(police[i].name);
-                    const point = turf.point([
-                        police[i].currLocation[0].long,
-                        police[i].currLocation[0].lat,
-                    ]);
+                    const point = turf.point([police[i].currLocation[0].long, police[i].currLocation[0].lat]);
                     const inside = booleanContains(poly, point);
                     new mapboxgl.Marker({ color: inside ? COLORS.GREEN : COLORS.RED })
                         .setLngLat([police[i].currLocation[0].long, police[i].currLocation[0].lat])
@@ -132,9 +127,7 @@ const Dashboard = () => {
                 }
             }
 
-            return () => {
-                clearInterval(interval);
-            };
+            return () => clearInterval(interval.current);
         }
     }, [police]);
 
@@ -154,14 +147,8 @@ const Dashboard = () => {
             <div className="relative min-h-screen md:flex" data-dev-hint="container">
                 <input type="checkbox" id="menu-open" className="hidden" />
 
-                <header
-                    className="bg-gray-600 text-gray-100 flex justify-between md:hidden"
-                    data-dev-hint="mobile menu bar"
-                >
-                    <a
-                        href="#"
-                        className="block p-6 text-white font-bold whitespace-nowrap truncate"
-                    >
+                <header className="bg-gray-600 text-gray-100 flex justify-between md:hidden" data-dev-hint="mobile menu bar">
+                    <a href="#" className="block p-6 text-white font-bold whitespace-nowrap truncate">
                         Officer's detail page
                     </a>
 
@@ -178,12 +165,7 @@ const Dashboard = () => {
                             viewBox="0 0 24 24"
                             stroke="currentColor"
                         >
-                            <path
-                                stroke-linecap="round"
-                                stroke-linejoin="round"
-                                stroke-width="2"
-                                d="M4 6h16M4 12h16M4 18h16"
-                            />
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
                         </svg>
                         <svg
                             id="menu-close-icon"
@@ -193,12 +175,7 @@ const Dashboard = () => {
                             viewBox="0 0 24 24"
                             stroke="currentColor"
                         >
-                            <path
-                                stroke-linecap="round"
-                                stroke-linejoin="round"
-                                stroke-width="2"
-                                d="M6 18L18 6M6 6l12 12"
-                            />
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
                         </svg>
                     </label>
                 </header>
@@ -208,13 +185,8 @@ const Dashboard = () => {
                     className="z-50 bg-gray-800 text-gray-100 md:w-1/4 w-5/6 space-y-6 pt-6 px-0 absolute inset-y-0 left-0 transform md:relative md:translate-x-0 transition duration-200 ease-in-out md:flex md:flex-col md:justify-between "
                     data-dev-hint="sidebar; px-0 for frameless; px-2 for visually inset the navigation"
                 >
-                    <div
-                        className="flex flex-col space-y-6"
-                        data-dev-hint="optional div for having an extra footer navigation"
-                    >
-                        <span className="mx-6 text-2xl font-extrabold whitespace-nowrap truncate">
-                            Officer's details
-                        </span>
+                    <div className="flex flex-col space-y-6" data-dev-hint="optional div for having an extra footer navigation">
+                        <span className="mx-6 text-2xl font-extrabold whitespace-nowrap truncate">Officer's details</span>
 
                         <SimpleBar style={{ maxHeight: 700 }}>
                             <nav data-dev-hint="main navigation" className="user-card">
@@ -252,18 +224,10 @@ const Dashboard = () => {
                         {currSession.startDateTime && (
                             <div className="pt-4">
                                 <span className="text-xs font-bold inline-block py-1 px-2 rounded text-pink-600 bg-pink-200 uppercase last:mr-0 mr-1">
-                                    Start time:{" "}
-                                    {moment
-                                        .utc(currSession.startDateTime)
-                                        .local()
-                                        .format("YYYY-MMM-DD h:mm A")}
+                                    Start time: {moment.utc(currSession.startDateTime).local().format("YYYY-MMM-DD h:mm A")}
                                 </span>
                                 <span className="text-xs font-bold inline-block py-1 px-2 rounded text-pink-600 bg-pink-200 uppercase last:mr-0 mr-1">
-                                    End time:{" "}
-                                    {moment
-                                        .utc(currSession.endDateTime)
-                                        .local()
-                                        .format("YYYY-MMM-DD h:mm A")}
+                                    End time: {moment.utc(currSession.endDateTime).local().format("YYYY-MMM-DD h:mm A")}
                                 </span>
                                 <span className="text-xs font-bold inline-block py-1 px-2 rounded text-pink-600 bg-pink-200 uppercase last:mr-0 mr-1">
                                     {currSession.bandobustName}
